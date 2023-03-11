@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>麻將餐費計算機</title>
+    <meta charset="UTF-8">
+  </head>
+  <body>
+    <h1>麻將餐費計算機</h1>
+    <h3>請輸入玩家金額：</h3>
+    玩家 1 <input type="number" id="g1"></br>
+    玩家 2 <input type="number" id="g2"></br>
+    玩家 3 <input type="number" id="g3"></br>
+    玩家 4 <input type="number" id="g4"></br>
+    <h3>請輸入總餐費：</h3>
+    餐費 <input type="number" id="price"></br>
+    <button onclick="computePrice()">提交</button>
+    <h3>結果</h3>
+    <p id="result1"></p></br>
+    <p id="result2"></p></br>
+    <p id="result3"></p></br>
+    <p id="result4"></p></br>
+    <script>
+      function computePrice() {
+        // const input = require('readline-sync');
+        // const majiang = input.question("輸入麻將總結算金額（持、媽咪、赤吉、赤米）：").split(' ').map(Number);
+        const majiang = [parseInt(document.getElementById("g1").value), parseInt(document.getElementById("g2").value), parseInt(document.getElementById("g3").value), parseInt(document.getElementById("g4").value)]
+        let price = document.getElementById("price").value;
+        const orimajiang = [...majiang];
+        console.log(`price = ${price}, majiang = [${majiang}]\n****************************************************************`);
+
+        // console.log(majiang.filter(i => i > 0).reduce((a, b) => a + b, 0))
+        // console.log([1, 2, 3, 4].reduce((a, b) => a + b, 0))
+        // console.log(majiang.filter(item => typeof item === 'number'))
+        price = price - majiang.filter(i => i > 0).reduce((a, b) => a + b, 0);
+
+        for (let i = 0; i < majiang.length; i++) {
+        if (majiang[i] >= 0) {
+            majiang[i] = 0;
+        }
+        }
+
+        console.log(`price = ${price}, majiang = [${majiang}]\n****************************************************************`);
+
+        while (price !== 0) {
+        const count = majiang.filter(i => i === Math.max(...majiang)).length;
+        if (count === 4) {
+            for (let i = 0; i < majiang.length; i++) {
+            majiang[i] -= Math.floor(price/count);
+            }
+            price = 0;
+        } else {
+            const temp = [...new Set(majiang)].sort((a, b) => b - a);
+            if (price/count >= (temp[0]-temp[1])) {
+            price = price - (temp[0]-temp[1])*count;
+            const ind = [];
+            for (let i = 0; i < majiang.length; i++) {
+                if (majiang[i] === Math.max(...majiang)) {
+                ind.push(i);
+                }
+            }
+            for (let i of ind) {
+                majiang[i] -= (temp[0]-temp[1]);
+            }
+            } else {
+            const ind = [];
+            for (let i = 0; i < majiang.length; i++) {
+                if (majiang[i] === Math.max(...majiang)) {
+                ind.push(i);
+                }
+            }
+            for (let i of ind) {
+                majiang[i] -= Math.floor(price/count);
+            }
+            price = 0;
+            }
+            console.log(`price = ${price}, majiang = [${majiang}]\n****************************************************************`);
+        }
+        }
+
+        const ans = orimajiang.map((item, index) => majiang[index] - Math.min(0, item));
+        document.getElementById("result1").innerHTML = `玩家 1：${ans[0]}`;
+        document.getElementById("result2").innerHTML = `玩家 2：${ans[1]}`;
+        document.getElementById("result3").innerHTML = `玩家 3：${ans[2]}`;
+        document.getElementById("result4").innerHTML = `玩家 4：${ans[3]}`;
+            }
+    </script>
+  </body>
+</html>
